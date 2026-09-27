@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0e17">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MemeDesk">
+  <meta name="description" content="Personal launchpad for Axiom, FOMO, and J7Tracker.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon-180.png">
+  <title>MemeDesk · Trading workspace</title>
+  <style>
+    :root { color-scheme: dark; font: 14px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif; background:#080b13; color:#edf2fb; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-width:280px; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font:inherit; cursor:pointer; }
+    a { color:inherit; text-decoration:none; }
+    .shell { min-height:100dvh; display:flex; flex-direction:column; background:radial-gradient(circle at 50% -30%,#20283d,#080b13 50%); }
+    header { display:flex; align-items:center; gap:12px; min-height:64px; padding:10px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left)); border-bottom:1px solid #2b3446; background:#0d111dcf; backdrop-filter:blur(15px); }
+    .mark { display:grid; place-items:center; width:35px; height:35px; border-radius:10px; color:#041710; font-weight:900; background:#54e7ae; box-shadow:0 0 25px #54e7ae33; }
+    .brand strong { display:block; font-size:16px; letter-spacing:.08em; } .brand small { display:block; color:#8b99ad; font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
+    .spacer { flex:1; }
+    .status { display:flex; align-items:center; gap:6px; color:#93a2b7; font-size:11px; white-space:nowrap; }
+    .dot { width:6px; height:6px; border-radius:50%; background:#54e7ae; }
+    .layouts { display:flex; gap:4px; padding:4px; border:1px solid #313b4f; background:#131a29; border-radius:11px; }
+    .layouts button { border:0; border-radius:7px; padding:7px 10px; background:transparent; color:#9daabe; font-size:11px; font-weight:800; }
+    .layouts button[aria-pressed="true"] { color:#071b15; background:#5ce9b3; }
+    .tabs { display:flex; gap:7px; padding:10px 14px 0; overflow:auto; scrollbar-width:none; }
+    .tabs button { flex:1; min-width:80px; border:1px solid #273346; border-bottom:0; border-radius:9px 9px 0 0; color:#9eacc0; background:#141a27; padding:10px; font-size:11px; font-weight:800; letter-spacing:.04em; }
+    .tabs button[aria-selected="true"] { color:#fff; background:#202b3c; border-color:#60728e; }
+    main { display:grid; grid-template-columns:repeat(var(--columns),minmax(0,1fr)); flex:1; min-height:0; gap:9px; padding:10px 12px max(12px,env(safe-area-inset-bottom)); }
+    .panel { display:flex; flex-direction:column; min-width:0; min-height:70vh; overflow:hidden; border:1px solid #2c374c; border-radius:12px; background:#101724; box-shadow:0 8px 35px #0005; }
+    .panel[hidden] { display:none !important; }
+    .panel-head { display:flex; align-items:center; gap:8px; min-height:44px; padding:0 10px; border-bottom:1px solid #2c374c; background:#172030; }
+    .site-dot { height:7px; width:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent); }
+    .site-name { font-size:11px; font-weight:850; letter-spacing:.065em; }
+    .domain { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#8090a8; font-size:10px; }
+    .open { flex-shrink:0; padding:7px 9px; border:1px solid #53637d; border-radius:7px; color:#eaf5f0; background:#263349; font-size:11px; font-weight:700; }
+    .open:hover { background:#334864; }
+    .frame-wrap { position:relative; flex:1; min-height:340px; background:#fff; }
+    iframe { width:100%; height:100%; border:0; display:block; }
+    .hint { display:flex; align-items:center; gap:8px; padding:8px 10px; color:#a9b7ca; background:#111927; font-size:10px; }
+    .hint svg { flex:none; }
+    .j7-card { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:13px; padding:clamp(18px,3vw,44px); background:radial-gradient(circle at top right,#483824,#121823 60%); }
+    .eyebrow { font-size:10px; font-weight:800; letter-spacing:.16em; color:#ffcb7b; }
+    .j7-card h2 { margin:0; max-width:460px; font-size:clamp(22px,3vw,36px); line-height:1.1; }
+    .j7-card p { max-width:470px; margin:0; color:#abb7c9; }
+    .j7-card .open { background:#e6ac52; color:#231709; border:0; padding:10px 15px; }
+    footer { color:#72839a; border-top:1px solid #202a3a; padding:8px 14px calc(8px + env(safe-area-inset-bottom)); font-size:10px; text-align:center; }
+    @media (orientation:portrait), (max-width:700px) { .status { display:none; } .layouts { display:none; } main { display:block; } .panel { min-height:calc(100dvh - 160px); height:calc(100dvh - 160px); } .tabs { display:flex; } }
+    @media (orientation:landscape) and (min-width:701px) { .tabs { display:none; } .panel { min-height:calc(100dvh - 118px); height:calc(100dvh - 118px); } }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="mark" aria-hidden="true">M</div>
+    <div class="brand"><strong>MEMEDESK</strong><small>Your trading workspace</small></div>
+    <div class="spacer"></div>
+    <div class="status"><span class="dot"></span> QUICK LAUNCH</div>
+    <div class="layouts" role="group" aria-label="Number of panels">
+      <button type="button" data-layout="1" aria-pressed="false">1 PANEL</button>
+      <button type="button" data-layout="2" aria-pressed="false">2 PANELS</button>
+      <button type="button" data-layout="3" aria-pressed="true">3 PANELS</button>
+    </div>
+  </header>
+  <nav class="tabs" aria-label="Trading sites">
+    <button type="button" data-tab="axiom" aria-selected="true">AXIOM</button>
+    <button type="button" data-tab="fomo" aria-selected="false">FOMO</button>
+    <button type="button" data-tab="j7" aria-selected="false">J7TRACKER</button>
+  </nav>
+  <main id="workspace" style="--columns:3">
+    <section class="panel" data-site="axiom" style="--accent:#a995ff" aria-label="Axiom">
+      <div class="panel-head"><span class="site-dot"></span><span class="site-name">AXIOM</span><span class="domain">axiom.trade</span><span class="spacer"></span><a class="open" href="https://axiom.trade/" target="_blank" rel="noopener noreferrer">OPEN ↗</a></div>
+      <div class="frame-wrap"><iframe title="Axiom trading site" src="https://axiom.trade/" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="clipboard-write"></iframe></div>
+      <div class="hint">If the site stays blank or login fails, tap OPEN ↗ to use its own tab.</div>
+    </section>
+    <section class="panel" data-site="fomo" style="--accent:#5ce9b3" aria-label="FOMO">
+      <div class="panel-head"><span class="site-dot"></span><span class="site-name">FOMO</span><span class="domain">fomo.family</span><span class="spacer"></span><a class="open" href="https://fomo.family/" target="_blank" rel="noopener noreferrer">OPEN ↗</a></div>
+      <div class="frame-wrap"><iframe title="FOMO trading site" src="https://fomo.family/" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="clipboard-write"></iframe></div>
+      <div class="hint">If the site stays blank or login fails, tap OPEN ↗ to use its own tab.</div>
+    </section>
+    <section class="panel" data-site="j7" style="--accent:#e8ac58" aria-label="J7Tracker">
+      <div class="panel-head"><span class="site-dot"></span><span class="site-name">J7TRACKER</span><span class="domain">j7tracker.co</span><span class="spacer"></span><a class="open" href="https://www.j7tracker.co/" target="_blank" rel="noopener noreferrer">OPEN ↗</a></div>
+      <div class="j7-card"><span class="eyebrow">TWITTER SIGNALS</span><h2>Keep J7Tracker one tap away.</h2><p>J7Tracker is a bookmarklet intended to run on X, Axiom, or FOMO. iPhone home-screen web apps cannot inject it into those sites. Open J7Tracker for its own installation instructions.</p><a class="open" href="https://www.j7tracker.co/" target="_blank" rel="noopener noreferrer">OPEN J7TRACKER ↗</a></div>
+    </section>
+  </main>
+  <footer>Official sites open directly. This dashboard never asks for your wallet keys or passwords.</footer>
+</div>
+<script>
+(() => {
+  const sites = ['axiom','fomo','j7'];
+  const panels = Object.fromEntries(sites.map(s => [s, document.querySelector(`[data-site="${s}"]`)]));
+  const workspace = document.getElementById('workspace');
+  let active = sites.includes(localStorage.getItem('memedesk.active')) ? localStorage.getItem('memedesk.active') : 'axiom';
+  let columns = Math.min(3, Math.max(1, Number(localStorage.getItem('memedesk.columns')) || 3));
+  function render() {
+    const portrait = matchMedia('(orientation:portrait), (max-width:700px)').matches;
+    const visible = portrait ? [active] : columns === 3 ? sites : [active, ...sites.filter(s => s !== active).slice(0, columns-1)];
+    workspace.style.setProperty('--columns', portrait ? 1 : columns);
+    sites.forEach(s => { panels[s].hidden = !visible.includes(s); });
+    document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === active)));
+    document.querySelectorAll('[data-layout]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.layout) === columns)));
+  }
+  document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { active=b.dataset.tab; localStorage.setItem('memedesk.active',active); render(); }));
+  document.querySelectorAll('[data-layout]').forEach(b => b.addEventListener('click', () => { columns=Number(b.dataset.layout); localStorage.setItem('memedesk.columns',columns); render(); }));
+  addEventListener('resize',render);
+  render();
+  if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "MemeDesk Trading Workspace",
+  "short_name": "MemeDesk",
+  "description": "Quick access to Axiom, FOMO and J7Tracker",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080b13",
+  "theme_color": "#0b0e17",
+  "icons": [{"src":"./icon-180.png","sizes":"180x180","type":"image/png"},{"src":"./icon-512.png","sizes":"512x512","type":"image/png"}]
+}
