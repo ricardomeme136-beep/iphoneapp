@@ -1,117 +1,20 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b0e17">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="MemeDesk">
-  <meta name="description" content="Personal launchpad for Axiom, FOMO, and J7Tracker.">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="./icon-180.png">
-  <title>MemeDesk · Trading workspace</title>
-  <style>
-    :root { color-scheme: dark; font: 14px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif; background:#080b13; color:#edf2fb; }
-    * { box-sizing:border-box; }
-    body { margin:0; min-width:280px; }
-    button, a { -webkit-tap-highlight-color: transparent; }
-    button { font:inherit; cursor:pointer; }
-    a { color:inherit; text-decoration:none; }
-    .shell { min-height:100dvh; display:flex; flex-direction:column; background:radial-gradient(circle at 50% -30%,#20283d,#080b13 50%); }
-    header { display:flex; align-items:center; gap:12px; min-height:64px; padding:10px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left)); border-bottom:1px solid #2b3446; background:#0d111dcf; backdrop-filter:blur(15px); }
-    .mark { display:grid; place-items:center; width:35px; height:35px; border-radius:10px; color:#041710; font-weight:900; background:#54e7ae; box-shadow:0 0 25px #54e7ae33; }
-    .brand strong { display:block; font-size:16px; letter-spacing:.08em; } .brand small { display:block; color:#8b99ad; font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
-    .spacer { flex:1; }
-    .status { display:flex; align-items:center; gap:6px; color:#93a2b7; font-size:11px; white-space:nowrap; }
-    .dot { width:6px; height:6px; border-radius:50%; background:#54e7ae; }
-    .layouts { display:flex; gap:4px; padding:4px; border:1px solid #313b4f; background:#131a29; border-radius:11px; }
-    .layouts button { border:0; border-radius:7px; padding:7px 10px; background:transparent; color:#9daabe; font-size:11px; font-weight:800; }
-    .layouts button[aria-pressed="true"] { color:#071b15; background:#5ce9b3; }
-    .tabs { display:flex; gap:7px; padding:10px 14px 0; overflow:auto; scrollbar-width:none; }
-    .tabs button { flex:1; min-width:80px; border:1px solid #273346; border-bottom:0; border-radius:9px 9px 0 0; color:#9eacc0; background:#141a27; padding:10px; font-size:11px; font-weight:800; letter-spacing:.04em; }
-    .tabs button[aria-selected="true"] { color:#fff; background:#202b3c; border-color:#60728e; }
-    main { display:grid; grid-template-columns:repeat(var(--columns),minmax(0,1fr)); flex:1; min-height:0; gap:9px; padding:10px 12px max(12px,env(safe-area-inset-bottom)); }
-    .panel { display:flex; flex-direction:column; min-width:0; min-height:70vh; overflow:hidden; border:1px solid #2c374c; border-radius:12px; background:#101724; box-shadow:0 8px 35px #0005; }
-    .panel[hidden] { display:none !important; }
-    .panel-head { display:flex; align-items:center; gap:8px; min-height:44px; padding:0 10px; border-bottom:1px solid #2c374c; background:#172030; }
-    .site-dot { height:7px; width:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent); }
-    .site-name { font-size:11px; font-weight:850; letter-spacing:.065em; }
-    .domain { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#8090a8; font-size:10px; }
-    .open { flex-shrink:0; padding:7px 9px; border:1px solid #53637d; border-radius:7px; color:#eaf5f0; background:#263349; font-size:11px; font-weight:700; }
-    .open:hover { background:#334864; }
-    .frame-wrap { position:relative; flex:1; min-height:340px; background:#fff; }
-    iframe { width:100%; height:100%; border:0; display:block; }
-    .hint { display:flex; align-items:center; gap:8px; padding:8px 10px; color:#a9b7ca; background:#111927; font-size:10px; }
-    .hint svg { flex:none; }
-    .j7-card { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:13px; padding:clamp(18px,3vw,44px); background:radial-gradient(circle at top right,#483824,#121823 60%); }
-    .eyebrow { font-size:10px; font-weight:800; letter-spacing:.16em; color:#ffcb7b; }
-    .j7-card h2 { margin:0; max-width:460px; font-size:clamp(22px,3vw,36px); line-height:1.1; }
-    .j7-card p { max-width:470px; margin:0; color:#abb7c9; }
-    .j7-card .open { background:#e6ac52; color:#231709; border:0; padding:10px 15px; }
-    footer { color:#72839a; border-top:1px solid #202a3a; padding:8px 14px calc(8px + env(safe-area-inset-bottom)); font-size:10px; text-align:center; }
-    @media (orientation:portrait), (max-width:700px) { .status { display:none; } .layouts { display:none; } main { display:block; } .panel { min-height:calc(100dvh - 160px); height:calc(100dvh - 160px); } .tabs { display:flex; } }
-    @media (orientation:landscape) and (min-width:701px) { .tabs { display:none; } .panel { min-height:calc(100dvh - 118px); height:calc(100dvh - 118px); } }
-  </style>
-</head>
-<body>
-<div class="shell">
-  <header>
-    <div class="mark" aria-hidden="true">M</div>
-    <div class="brand"><strong>MEMEDESK</strong><small>Your trading workspace</small></div>
-    <div class="spacer"></div>
-    <div class="status"><span class="dot"></span> QUICK LAUNCH</div>
-    <div class="layouts" role="group" aria-label="Number of panels">
-      <button type="button" data-layout="1" aria-pressed="false">1 PANEL</button>
-      <button type="button" data-layout="2" aria-pressed="false">2 PANELS</button>
-      <button type="button" data-layout="3" aria-pressed="true">3 PANELS</button>
-    </div>
-  </header>
-  <nav class="tabs" aria-label="Trading sites">
-    <button type="button" data-tab="axiom" aria-selected="true">AXIOM</button>
-    <button type="button" data-tab="fomo" aria-selected="false">FOMO</button>
-    <button type="button" data-tab="j7" aria-selected="false">J7TRACKER</button>
-  </nav>
-  <main id="workspace" style="--columns:3">
-    <section class="panel" data-site="axiom" style="--accent:#a995ff" aria-label="Axiom">
-      <div class="panel-head"><span class="site-dot"></span><span class="site-name">AXIOM</span><span class="domain">axiom.trade</span><span class="spacer"></span><a class="open" href="https://axiom.trade/" target="_blank" rel="noopener noreferrer">OPEN ↗</a></div>
-      <div class="frame-wrap"><iframe title="Axiom trading site" src="https://axiom.trade/" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="clipboard-write"></iframe></div>
-      <div class="hint">If the site stays blank or login fails, tap OPEN ↗ to use its own tab.</div>
-    </section>
-    <section class="panel" data-site="fomo" style="--accent:#5ce9b3" aria-label="FOMO">
-      <div class="panel-head"><span class="site-dot"></span><span class="site-name">FOMO</span><span class="domain">fomo.family</span><span class="spacer"></span><a class="open" href="https://fomo.family/" target="_blank" rel="noopener noreferrer">OPEN ↗</a></div>
-      <div class="frame-wrap"><iframe title="FOMO trading site" src="https://fomo.family/" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="clipboard-write"></iframe></div>
-      <div class="hint">If the site stays blank or login fails, tap OPEN ↗ to use its own tab.</div>
-    </section>
-    <section class="panel" data-site="j7" style="--accent:#e8ac58" aria-label="J7Tracker">
-      <div class="panel-head"><span class="site-dot"></span><span class="site-name">J7TRACKER</span><span class="domain">j7tracker.co</span><span class="spacer"></span><a class="open" href="https://www.j7tracker.co/" target="_blank" rel="noopener noreferrer">OPEN ↗</a></div>
-      <div class="j7-card"><span class="eyebrow">TWITTER SIGNALS</span><h2>Keep J7Tracker one tap away.</h2><p>J7Tracker is a bookmarklet intended to run on X, Axiom, or FOMO. iPhone home-screen web apps cannot inject it into those sites. Open J7Tracker for its own installation instructions.</p><a class="open" href="https://www.j7tracker.co/" target="_blank" rel="noopener noreferrer">OPEN J7TRACKER ↗</a></div>
-    </section>
-  </main>
-  <footer>Official sites open directly. This dashboard never asks for your wallet keys or passwords.</footer>
-</div>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0e18"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="MemeDesk">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon-180.png">
+<title>MemeDesk · Your workspace</title>
+<style>
+:root{color-scheme:dark;font:14px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;background:#090d16;color:#edf3fc}*{box-sizing:border-box}body{margin:0;min-width:310px}button,input,select{font:inherit}button{cursor:pointer}.app{min-height:100dvh;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% -25%,#222d43,#090d16 53%)}header{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px max(12px,env(safe-area-inset-right)) 10px max(12px,env(safe-area-inset-left));border-bottom:1px solid #2d394b;background:#0e1523ed}.logo{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;color:#0a2218;background:#61e9b3;font-weight:900}.title{margin-right:auto}.title b{display:block;letter-spacing:.08em;font-size:15px}.title small{display:block;color:#8fa0b8;font-size:10px}.toolbar{display:flex;gap:6px;align-items:center;overflow:auto;scrollbar-width:none;max-width:100%}.pill{color:#072017;background:#60e9b1;border:1px solid #60e9b1;padding:8px 10px;border-radius:9px;font-size:11px;font-weight:800;white-space:nowrap}select{color:#eaf0fc;background:#182334;border:1px solid #34445b;border-radius:9px;padding:8px;font-size:11px;max-width:190px}.strip{display:flex;align-items:center;gap:5px;padding:8px 12px 0;overflow-x:auto;scrollbar-width:none}.tab{display:flex;align-items:center;gap:6px;flex-shrink:0;color:#a9bad0;background:#141d2c;border:1px solid #2c3b51;border-radius:9px 9px 0 0;padding:9px 11px;max-width:170px;font-size:11px;font-weight:800}.tab.active{color:#fff;background:#243146;border-color:#647b99}.tab.drag-over{outline:2px solid #61e9b3}.tab .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tab small{color:#6e829d}
+main{display:grid;gap:8px;flex:1;min-height:0;padding:9px 12px max(12px,env(safe-area-inset-bottom));grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(300px,1fr))}main[data-layout="equal"]{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(500px,1fr)}main[data-layout="top"] .tile:nth-child(3){grid-column:1/-1}main[data-layout="left"]{grid-template-columns:2fr 1fr}main[data-layout="left"] .tile:first-child{grid-row:span 2}main[data-layout="right"]{grid-template-columns:1fr 2fr}main[data-layout="right"] .tile:first-child{grid-column:2;grid-row:span 2}main[data-layout="right"] .tile:nth-child(2){grid-column:1;grid-row:1}main[data-layout="two"]{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:minmax(500px,1fr)}main[data-layout="single"]{grid-template-columns:1fr;grid-template-rows:minmax(500px,1fr)}.tile{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border:1px solid #304157;border-radius:11px;background:#111a29}.tile-head{display:flex;align-items:center;gap:7px;padding:7px 8px;background:#192438;border-bottom:1px solid #304157}.site-dot{width:7px;height:7px;flex:none;border-radius:50%;background:#60e9b1;box-shadow:0 0 10px #60e9b155}.site-label{max-width:95px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:800}.address{flex:1;min-width:55px;width:0;background:#0d1421;color:#e2edfa;border:1px solid #3b4b62;border-radius:7px;padding:6px 8px;font-size:12px;outline:none}.address:focus{border-color:#60e9b1}.icon-button{flex:none;border:1px solid #3b4b62;background:#27354a;color:#e8f1fc;border-radius:7px;padding:6px 8px;font-size:11px;font-weight:700}.view{flex:1;position:relative;min-height:250px;background:#fff}iframe{display:block;border:0;width:100%;height:100%}.notice{color:#a8b8ce;background:#111927;border-top:1px solid #2d394b;padding:7px 9px;font-size:10px}.help{color:#8da0b7;font-size:11px;padding:0 13px 10px}.help strong{color:#d9e8f8}
+@media(max-width:760px),(orientation:portrait){main,main[data-layout]{display:block;padding:8px 10px}.tile{display:none;min-height:calc(100dvh - 190px);height:calc(100dvh - 190px)}.tile.mobile-active{display:flex}.toolbar{width:100%}.toolbar select{flex:1;max-width:none}.tile-head{flex-wrap:wrap}.site-label{max-width:120px}.address{min-width:calc(100% - 50px);order:2}}
+</style></head><body><div class="app"><header><div class="logo" aria-hidden="true">M</div><div class="title"><b>MEMEDESK</b><small>Arrange your trading workspace</small></div><div class="toolbar"><select id="layout" aria-label="Panel layout"><option value="top">Two top · big bottom</option><option value="equal">Three equal</option><option value="left">Big left · two right</option><option value="right">Big right · two left</option><option value="two">Two side by side</option><option value="single">One panel</option></select><button class="pill" id="add" type="button">+ ADD TAB</button></div></header><nav class="strip" id="tabs" aria-label="Tabs, drag to reorder"></nav><main id="grid"></main><div class="help"><strong>Tip:</strong> Drag tabs to reorder, or use ◀ ▶ on a panel. Paste any HTTPS address; a search phrase opens search in a new tab.</div></div>
 <script>
-(() => {
-  const sites = ['axiom','fomo','j7'];
-  const panels = Object.fromEntries(sites.map(s => [s, document.querySelector(`[data-site="${s}"]`)]));
-  const workspace = document.getElementById('workspace');
-  let active = sites.includes(localStorage.getItem('memedesk.active')) ? localStorage.getItem('memedesk.active') : 'axiom';
-  let columns = Math.min(3, Math.max(1, Number(localStorage.getItem('memedesk.columns')) || 3));
-  function render() {
-    const portrait = matchMedia('(orientation:portrait), (max-width:700px)').matches;
-    const visible = portrait ? [active] : columns === 3 ? sites : [active, ...sites.filter(s => s !== active).slice(0, columns-1)];
-    workspace.style.setProperty('--columns', portrait ? 1 : columns);
-    sites.forEach(s => { panels[s].hidden = !visible.includes(s); });
-    document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === active)));
-    document.querySelectorAll('[data-layout]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.layout) === columns)));
-  }
-  document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { active=b.dataset.tab; localStorage.setItem('memedesk.active',active); render(); }));
-  document.querySelectorAll('[data-layout]').forEach(b => b.addEventListener('click', () => { columns=Number(b.dataset.layout); localStorage.setItem('memedesk.columns',columns); render(); }));
-  addEventListener('resize',render);
-  render();
-  if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+(()=>{
+const KEY='memedesk.workspace.v2';const defaults=[{id:'axiom',name:'Axiom',url:'https://axiom.trade/'},{id:'fomo',name:'FOMO',url:'https://fomo.family/'},{id:'j7',name:'J7Tracker',url:'https://www.j7tracker.co/'}];let saved;try{saved=JSON.parse(localStorage.getItem(KEY))}catch(_){}let tabs=Array.isArray(saved?.tabs)&&saved.tabs.length?saved.tabs.filter(t=>typeof t.id==='string'&&typeof t.url==='string').slice(0,8):defaults;if(!tabs.length)tabs=defaults;let active=tabs.some(t=>t.id===saved?.active)?saved.active:tabs[0].id;let layout=['top','equal','left','right','two','single'].includes(saved?.layout)?saved.layout:'top';const strip=document.getElementById('tabs'),grid=document.getElementById('grid'),picker=document.getElementById('layout');const save=()=>localStorage.setItem(KEY,JSON.stringify({tabs:tabs.map(({id,name,url})=>({id,name,url})),active,layout}));const selected=()=>layout==='single'?[active]:layout==='two'?[active,...tabs.filter(t=>t.id!==active).slice(0,1).map(t=>t.id)]:(tabs.slice(0,3).some(t=>t.id===active)?tabs.slice(0,3):[...tabs.slice(0,2),tabs.find(t=>t.id===active)]).map(t=>t.id);
+function parse(value){const v=value.trim();if(!v)return null;if(/\s/.test(v)||!v.includes('.'))return{search:'https://www.google.com/search?q='+encodeURIComponent(v)};const candidate=/^https?:\/\//i.test(v)?v:'https://'+v;try{const u=new URL(candidate);return u.protocol==='https:'?{url:u.href}:null}catch(_){return null}}
+function move(id,step){const a=tabs.findIndex(t=>t.id===id),b=a+step;if(a<0||b<0||b>=tabs.length)return;[tabs[a],tabs[b]]=[tabs[b],tabs[a]];save();render()}
+function render(){picker.value=layout;const ids=selected();grid.dataset.layout=layout;strip.replaceChildren();grid.replaceChildren();tabs.forEach((t,i)=>{const b=document.createElement('button');b.className='tab'+(active===t.id?' active':'');b.type='button';b.draggable=true;const name=document.createElement('span');name.className='name';name.textContent=t.name;const number=document.createElement('small');number.textContent=String(i+1);b.append(number,name);b.title='Drag to reorder';b.onclick=()=>{active=t.id;save();render()};b.ondragstart=e=>e.dataTransfer.setData('text/plain',t.id);b.ondragover=e=>{e.preventDefault();b.classList.add('drag-over')};b.ondragleave=()=>b.classList.remove('drag-over');b.ondrop=e=>{e.preventDefault();b.classList.remove('drag-over');const from=e.dataTransfer.getData('text/plain'),a=tabs.findIndex(x=>x.id===from),z=tabs.findIndex(x=>x.id===t.id);if(a>=0&&z>=0&&a!==z){tabs.splice(z,0,tabs.splice(a,1)[0]);save();render()}};strip.append(b)});ids.forEach(id=>{const t=tabs.find(x=>x.id===id);if(!t)return;const panel=document.createElement('section');panel.className='tile'+(id===active?' mobile-active':'');panel.setAttribute('aria-label',t.name);const head=document.createElement('div');head.className='tile-head';const dot=document.createElement('span');dot.className='site-dot';const label=document.createElement('span');label.className='site-label';label.textContent=t.name;const input=document.createElement('input');input.className='address';input.type='text';input.value=t.url;input.autocapitalize='none';input.autocomplete='off';input.spellcheck=false;input.setAttribute('aria-label','Address or search for '+t.name);input.onkeydown=e=>{if(e.key==='Enter'){const p=parse(input.value);if(!p){input.setCustomValidity('Enter an HTTPS address or search phrase');input.reportValidity();return}input.setCustomValidity('');if(p.search){window.open(p.search,'_blank','noopener');input.value=t.url}else{t.url=p.url;t.name=new URL(p.url).hostname.replace(/^www\./,'');save();render()}}};const button=(txt,title,fn)=>{const b=document.createElement('button');b.type='button';b.className='icon-button';b.textContent=txt;b.title=title;b.setAttribute('aria-label',title);b.onclick=fn;return b};head.append(dot,label,input,button('OPEN ↗','Open '+t.name+' directly',()=>window.open(t.url,'_blank','noopener')),button('◀','Move '+t.name+' earlier',()=>move(id,-1)),button('▶','Move '+t.name+' later',()=>move(id,1)),button('×','Remove '+t.name,()=>{if(tabs.length<=1)return;tabs=tabs.filter(x=>x.id!==id);if(active===id)active=tabs[0].id;save();render()}));const view=document.createElement('div');view.className='view';const frame=document.createElement('iframe');frame.title=t.name+' website';frame.src=t.url;frame.referrerPolicy='strict-origin-when-cross-origin';view.append(frame);const note=document.createElement('div');note.className='notice';note.textContent='Some sites block embedded pages or wallet login. Use OPEN ↗ when this panel stays blank or login fails.';panel.append(head,view,note);grid.append(panel)})}
+picker.onchange=()=>{layout=picker.value;save();render()};document.getElementById('add').onclick=()=>{if(tabs.length>=8){alert('You can have up to 8 tabs.');return}const id='custom-'+Date.now();tabs.unshift({id,name:'New tab',url:'https://www.google.com/'});active=id;save();render();const field=grid.querySelector('.mobile-active .address')||grid.querySelector('.address');field?.focus();field?.select()};render();if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))
 })();
-</script>
-</body>
-</html>
+</script></body></html>
